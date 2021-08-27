@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="Description" content="Space war is a 8 bit game, it was very famous in 1980s" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="../image/myPlane.png">
+    <title>War plane (level 3)</title>
+</head>
+<script src="game.js"></script>
+<script src="rival.js"></script>
+<script src="bullet.js"></script>
+<script src="player.js"></script>
+<script src="boom.js"></script>
+<style>
+    canvas {
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+
+        margin-top: 3%;
+        background-image: url('../image/space.gif');
+        background-repeat: no-repeat;
+        background-size: 500 700;
+        border-radius: 1%;
+    }
+
+    .title {
+        color: white;
+        font-size: 17px;
+        font-family: 'Courier', monospace;
+        position: absolute;
+        left: 37.5%;
+        margin-top: 3.5%;
+    }
+
+    .num {
+        font-family: inherit;
+        position: absolute;
+        left: 40%;
+        margin-top: 3.5%;
+    }
+
+    body {
+        background-color: rgb(55, 91, 131);
+    }
+</style>
+
+<body>
+    <img src="../image/bullet1.png" alt="" style="position: absolute;left: 19.2% ;top: 50%;width: 1.3%;">
+    <img src="../image/bullet1.png" alt="" style="position: absolute;left: 19.2% ;top: 30%;width: 1.3%;">
+    <img src="../image/myPlane.png" alt="" style="position: absolute;left: 10% ;top: 62%;width: 20%;">
+    <img src="../image/bullet3.png" alt="" style="position: absolute;left: 79.9% ;top: 45%;width: 2%;">
+    <img src="../image/bullet3.png" alt="" style="position: absolute;left: 79.9% ;top: 65%;width: 2%;">
+    <img src="../image/darkPlane.png" alt="" style="position: absolute;left: 70%;">
+    <div class="container">
+        <h1 style="font-family:  'Courier', monospace;color: white;margin-left:29%;position: absolute;top:15%; display: none;" id="lose">
+        you lose !</h1>
+        <h1 style="font-family:  'Courier', monospace;color: rgba(233, 233, 18, 0.911);margin-left:29%;position: absolute;top:15%; display: none;" id="win">
+        you win !</h1>
+        <button type="button" class="btn btn-outline-success" style="display: none;position: absolute;top: 8%; left: 42%;" id="continue" onclick='run()'>Continue</button>
+        <button type="button" class="btn btn-outline-secondary" style="display: block; position: absolute;top: 8%; left: 42%;" id='pause'onclick='stopFunction()'>Pause</button>
+        <span class="title">HP: </span><span class="num" id="hp" style="color: red;">65</span>
+        <br>
+        <img class="title" src="../image/bullet2.png"
+            style="width:10px; height:25px; position: absolute;margin-top: 3.3%;left:37.6%"> </img><span class="title"
+            style="margin-left:1.13%;">:</span><span class="num" style="color: yellow;" id="bullet" >20</span>
+        <canvas id="Canvas" width=500 height=700>
+
+        </canvas>
+
+    </div>
+    <script>
+        let button=new Audio()
+        button.src='../audio/button.mp3'
+        let paper = document.getElementById('Canvas')
+        let game = new Game()
+        let rocks = []
+        let badPlanes = []
+        let bullets = [];
+        let bullets2 = [];
+        let shootArr=['f']
+        let booms=[]
+        let index=20
+        let rockNum = game.randomNumber(3,6)
+        game.createRock(rockNum);
+        game.createBadPlane(game.randomNumber(12, 17));
+        //alert(rockNum)
+        function main() {
+            game.moveRocks();
+            game.clearScreen(paper);
+            game.displayRocks()
+            game.displayBadPlanes()
+            game.moveBadPlanes()
+            game.badPlanesFire()
+            game.moveBadPlanes2()
+            game.displayPlayer();
+            game.moveBullets()
+            game.displayBullets()
+            game.displayBoom()
+            game.checkCrash()
+            game.checkout()
+            game.checkWin()
+        }
+       function setBullet(){
+           index--;
+           document.getElementById('bullet').innerText=index
+           if(index==0){
+                shootArr.pop()
+                setTimeout(function(){
+                    shootArr.push('f');
+                    index=15;
+                    document.getElementById('bullet').innerText=index
+                },8000)
+           }
+        }
+        function deleteBoom(){
+            booms.pop()
+        }
+        function even(evt) {
+            switch (evt.key) {
+                case 'ArrowLeft':
+                    game.moveLeft();
+                    break;
+
+                case "ArrowRight":
+                    game.moveRight()
+                    break;
+                case "ArrowUp":
+                    game.moveUp()
+                    break;
+                case "ArrowDown":
+                    game.moveDown()
+                    break;
+                case shootArr[0]:
+                    deleteBoom()
+                    game.playerShoot()
+                    setBullet()
+                    break;
+            }
+        }
+        let myvar= setInterval(main, 20)
+        function run(){
+            button.play()
+             myvar= setInterval(main,20);
+             document.getElementById('pause').style.display='block'
+             document.getElementById('continue').style.display='none'
+             return
+        }
+        function stopFunction(){
+            button.play()
+            document.getElementById('continue').style.display='block';
+            document.getElementById('pause').style.display='none'
+            clearInterval(myvar)
+            return
+        }
+
+    
+        window.addEventListener('keydown', even)
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>
